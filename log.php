@@ -45,7 +45,7 @@ if(!empty($_POST['temp']) && !empty($_POST['humidity']) && !empty($_POST['heat_i
     	$pressure_format = number_format($pressure, 2, '.', '');
 
 	// The code below inserts the variable values into the table in the MySQL database. The table name is likely "weather." See "Database and Table Setup" section in tutorial (Step 6). 
-	$sql = "INSERT INTO weather (date, time, temp, humidity, heat_index, dew_point, pressure) // Table column names are in parentheses.
+	$sql = "INSERT INTO ---------- (date, time, temp, humidity, heat_index, dew_point, pressure) // Table column names are in parentheses.
 	VALUES ('$dateNow', '$timeNow', '$temp_format', '$humidity_format', '$heat_index_format', '$dew_point_format', '$pressure_format')";
 
 	// Code for debgugging the NodeMCU-log.php connection. Results will appear in the serial monitor.
