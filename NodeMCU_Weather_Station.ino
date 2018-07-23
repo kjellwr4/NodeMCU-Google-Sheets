@@ -1,37 +1,37 @@
-#include <ESP8266WiFi.h>
+#include <ESP8266WiFi.h> // Add http://arduino.esp8266.com/stable/package_esp8266com_index.json to Additional Boards Manager URLs in Preferences of Arduino IDE.
 #include <WiFiClient.h> 
 #include <ESP8266WebServer.h>
 #include <ESP8266HTTPClient.h>
 #include <Wire.h>
 #include <SPI.h>
-#include <Adafruit_Sensor.h> //Install "Adafruit Unified Sensor" in Manage Libraries.
-#include <Adafruit_BMP280.h> //Install "Adafruit BMP280 Library" in Manage Libraries.
-#include <DHT.h> //Install "DHT Sensor Library" in Manage Libraries.
+#include <Adafruit_Sensor.h> // Install "Adafruit Unified Sensor" in Manage Libraries.
+#include <Adafruit_BMP280.h> // Install "Adafruit BMP280 Library" in Manage Libraries.
+#include <DHT.h> // Install "DHT Sensor Library" in Manage Libraries.
 
-#define DHTPIN 2 //Connect the signal pin of the DHT22 to D4 on the NodeMCU. Keep this at pin 2- the NodeMCU pin mapping is incorrect.
+#define DHTPIN 2 // Connect the signal pin of the DHT22 to D4 on the NodeMCU. Keep this at pin 2- the NodeMCU pin mapping is incorrect.
 #define DHTTYPE DHT22
 DHT dht(DHTPIN, DHTTYPE);
-float elevation = ---.--;  //Elevation of deployment location in meters. https://developers.google.com/maps/documentation/javascript/examples/elevation-simple
-float dewPointFast(float celcius, float humidity); //Function call declaration for dew point claculation.
-float heatIndexPrecise(float fahrenheit, float humidity); //Function call declaration for heat index claculation.
+float elevation = ---.--;  // Elevation of NodeMCU location in meters. https://developers.google.com/maps/documentation/javascript/examples/elevation-simple
+float dewPointFast(float celcius, float humidity); // Function call declaration for dew point claculation.
+float heatIndexPrecise(float fahrenheit, float humidity); // Function call declaration for heat index claculation.
 
-Adafruit_BMP280 bme; //I2C Address for the GY-BMP280 is 0x77.
+Adafruit_BMP280 bme; // The I2C Address for the GY-BMP280 is 0x77. If not working properly, check the Adafruit_BMP280 library and change the I2C address.
 
-const char *ssid = "----------";  //ENTER YOUR WIFI SETTINGS
-const char *password = "----------";
+const char *ssid = "----------";  // Wifi network name.
+const char *password = "----------"; // Wifi network password.
  
-//Web/Server address to read/write from 
+// Webserver address for the Raspberry Pi.
 const char *host = "192.168.-.--"; // IP Address
 
 void setup() {
   
   delay(1000);
   Serial.begin(115200);
-  WiFi.mode(WIFI_OFF);        //Prevents reconnection issue (taking too long to connect)
+  WiFi.mode(WIFI_OFF); // Prevents timeout reconnection issue.
   delay(1000);
-  WiFi.mode(WIFI_STA);        //This line hides the viewing of ESP as wifi hotspot
+  WiFi.mode(WIFI_STA); // Hide NodeMCU as WiFi hotspot.
   
-  WiFi.begin(ssid, password);     //Connect to your WiFi router
+  WiFi.begin(ssid, password); // Connect to the WiFi router.
   Serial.println("");
  
   Serial.print("Connecting");
@@ -41,17 +41,17 @@ void setup() {
     Serial.print(".");
   }
  
-  //If connection successful show IP address in serial monitor
+  // If connection successful show IP address in serial monitor.
   Serial.println("");
   Serial.print("Connected to ");
   Serial.println(ssid);
   Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());  //IP address assigned to your ESP
+  Serial.println(WiFi.localIP());  // IP address assigned to the NodeMCU.
 
   dht.begin();
   
   if (!bme.begin()) {  
-    Serial.println("Could not find a valid BMP280 sensor, check wiring!");
+    Serial.println("Could not find the GY-BMP280 sensor. Check wiring before continuing.");
     while (1);
   }
 
@@ -59,24 +59,25 @@ void setup() {
 
 void loop() {
 
-  float h = dht.readHumidity(); //DHT22 relative humidity as a percent.
-  float f = dht.readTemperature(true); //DHT22 Fahrenheit reading.
-  float tempCelcius = dht.readTemperature(); //DHT22 Celcius reading.
-  //float hif = dht.computeHeatIndex(f, h); //DHT22 heat index calculation. Not very precise.
-  float bmp280Fah = ((bme.readTemperature()*1.8)+32); //GY-BMP280 temperature calculation.
-  float tempAvg = (f + bmp280Fah)/2; //Average of DHT and BMP Fahrenheit temperatures.
-  float relPressure = bme.readPressure(); //GY-BMP280 relative pressure calculation.
-  float seaLevelPressure = ((relPressure/pow((1-((float)(elevation))/44330), 5.255))/100.0);
-  float dewPointCelcius = dewPointFast(tempCelcius, h);
-  float dewPointFah = ((dewPointCelcius*9)/5)+32;
-  float heatIndex = heatIndexPrecise(tempAvg, h); //Precise heat index calculation based NOAA. https://www.wpc.ncep.noaa.gov/html/heatindex_equation.shtml
+  float h = dht.readHumidity(); // DHT22 relative humidity as a percent.
+  float f = dht.readTemperature(true); // DHT22 Fahrenheit reading.
+  float tempCelcius = dht.readTemperature(); // DHT22 Celcius reading.
+  //float hif = dht.computeHeatIndex(f, h); // DHT22 heat index calculation. Not very precise.
+  float bmp280Fah = ((bme.readTemperature()*1.8)+32); // GY-BMP280 temperature calculation.
+  float tempAvg = (f + bmp280Fah)/2; // Average of DHT and BMP Fahrenheit temperatures.
+  float relPressure = bme.readPressure(); / /GY-BMP280 relative pressure calculation.
+  float seaLevelPressure = ((relPressure/pow((1-((float)(elevation))/44330), 5.255))/100.0); // Sea level pressure calculation.
+  float dewPointCelcius = dewPointFast(tempCelcius, h); // Dew point in Celcius.
+  float dewPointFah = ((dewPointCelcius*9)/5)+32; // Dew point conversion to Fahrenheit.
+  float heatIndex = heatIndexPrecise(tempAvg, h); //Precise heat index calculation based NOAA in Fahrenheit. https://www.wpc.ncep.noaa.gov/html/heatindex_equation.shtml
 
-  String postData = "temp=" + String(tempAvg) //Change temp_dht. Change in log.php and MySQL database.
+  String postData = "temp=" + String(tempAvg) // The postData string contains all of the data that is sent to log.php.
   + "&humidity=" + String(h)
   + "&heat_index=" + String(heatIndex)
   + "&dew_point=" + String(dewPointFah)
   + "&pressure=" + String(seaLevelPressure);
 
+  // The following serial.print commands display the relevant data in the serial monitor. Make sure that the baud rate is set to 115200.
   Serial.println(tempAvg);
   Serial.println(h);
   Serial.println(heatIndex);
@@ -85,6 +86,7 @@ void loop() {
   Serial.print("postData String: ");
   Serial.println(postData);
   
+  // The following commands send the data from the NodeMCU to log.php.
   HTTPClient http; 
   http.begin("http://192.168.-.--/log.php"); // Change to include IP Address.
   http.addHeader("Content-Type", "application/x-www-form-urlencoded"); 
@@ -106,11 +108,11 @@ float dewPointFast(float celsius, float humidity) {
   SUM += 8.1328e-3 * (pow(10, (-3.49149 * (RATIO - 1))) - 1) ;
   SUM += log10(1013.246);
   double VP = pow(10, SUM - 3) * humidity;
-  double T = log(VP/0.61078);   // temp var
+  double T = log(VP/0.61078);
   return (241.88 * T) / (17.558 - T);
 }
 
-//Function for calculating more precise heat index (F).
+//Function for calculating more precise heat index (F). From https://www.wpc.ncep.noaa.gov/html/heatindex_equation.shtml
 float heatIndexPrecise(float fahrenheit, float humidity) {
   float computedHI;
   double regressionHI = -42.379 + (2.04901523*fahrenheit);
