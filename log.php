@@ -28,38 +28,36 @@ $timeNow = date("g:i A"); // Time format can be changed, see http://php.net/manu
  * 
 *************/
 
-if(!empty($_POST['temp_dht']) && !empty($_POST['temp_bmp']) && !empty($_POST['humidity']) && !empty($_POST['heat_index']) && !empty($_POST['dew_point']) && !empty($_POST['pressure']))
+if(!empty($_POST['temp']) && !empty($_POST['humidity']) && !empty($_POST['heat_index']) && !empty($_POST['dew_point']) && !empty($_POST['pressure']))
 	{
-		// The code below stores the readings as string values in PHP variables.
-		$temp_dht = mysqli_real_escape_string($conn, $_POST['temp_dht']);
-    	$temp_bmp = mysqli_real_escape_string($conn, $_POST['temp_bmp']);
+	// The code below stores the readings as string values in PHP variables.
+	$temp = mysqli_real_escape_string($conn, $_POST['temp']);
     	$humidity = mysqli_real_escape_string($conn, $_POST['humidity']);
     	$heat_index = mysqli_real_escape_string($conn, $_POST['heat_index']);
     	$dew_point = mysqli_real_escape_string($conn, $_POST['dew_point']);
     	$pressure = mysqli_real_escape_string($conn, $_POST['pressure']);
     	
     	// The code below formats strings to numbers via http://php.net/manual/en/function.number-format.php
-    	$temp_dht_format = number_format($temp_dht, 2, '.', '');
-    	$temp_bmp_format = number_format($temp_bmp, 2, '.', '');
+    	$temp_format = number_format($temp, 2, '.', '');
     	$humidity_format = number_format($humidity, 2, '.', '');
     	$heat_index_format = number_format($heat_index, 2, '.', '');
     	$dew_point_format = number_format($dew_point, 2, '.', '');
     	$pressure_format = number_format($pressure, 2, '.', '');
 
-		// The code below inserts the variable values into the column names in the MySQL database. The table name is "weather."
-		$sql = "INSERT INTO weather (date, time, temp_dht, temp_bmp, humidity, heat_index, dew_point, pressure)
-		VALUES ('$dateNow', '$timeNow', '$temp_dht_format', '$temp_bmp_format', '$humidity_format', '$heat_index_format', '$dew_point_format', '$pressure_format')";
+	// The code below inserts the variable values into the table in the MySQL database. The table name is likely "weather." See "Database and Table Setup" section in tutorial (Step 6). 
+	$sql = "INSERT INTO weather (date, time, temp, humidity, heat_index, dew_point, pressure) // Table column names are in parentheses.
+	VALUES ('$dateNow', '$timeNow', '$temp_format', '$humidity_format', '$heat_index_format', '$dew_point_format', '$pressure_format')";
 
-		// Code for debgugging the NodeMCU-log.php connection. Results will appear in the serial monitor.
-		if ($conn->query($sql) === TRUE) 
-		{
-			echo "OK";
-		} 
-		else 
-		{
-			echo "Error: " . $sql . "<br>" . $conn->error;
-		}
+	// Code for debgugging the NodeMCU-log.php connection. Results will appear in the serial monitor.
+	if ($conn->query($sql) === TRUE) 
+	{
+		echo "OK";
+	} 
+	else 
+	{
+		echo "Error: " . $sql . "<br>" . $conn->error;
 	}
+}
 
 $conn->close();
 
@@ -154,9 +152,9 @@ $client = getClient();
 $service = new Google_Service_Sheets($client);
 $requestBody = new Google_Service_Sheets_ValueRange();
 $spreadsheetId = '--------------------------------'; // Replace the characters between quotes with your spreadsheet ID. See URL.
-$requestBody->setValues(["values" => [$dateNow, $timeNow, $temp_dht_format, $temp_bmp_format, $humidity_format, $heat_index_format, $dew_point_format, $pressure_format]]); // Add the variables in list form. Order matters in terms of columns on the spreadsheet!
+$requestBody->setValues(["values" => [$dateNow, $timeNow, $temp_format, $humidity_format, $heat_index_format, $dew_point_format, $pressure_format]]); // Add the variables in list form. Order matters in terms of columns on the spreadsheet!
 $range = 'A1'; // Do not change this value regardless of the number of values set in the $requestBody. It should always be A1.
-$conf = ["valueInputOption" => "USER_ENTERED"]; // See https://developers.google.com/sheets/api/reference/rest/v4/ValueInputOption
+$conf = ["valueInputOption" => "USER_ENTERED"]; // Or "RAW." See https://developers.google.com/sheets/api/reference/rest/v4/ValueInputOption
 $response = $service->spreadsheets_values->append($spreadsheetId, $range, $requestBody, $conf);
 
 ?>
