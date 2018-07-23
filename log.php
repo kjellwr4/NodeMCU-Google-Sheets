@@ -5,9 +5,9 @@
 *************/
 
 $servername = "localhost";
-$username = "----------"; // Username for phpMyAdmin.
-$password = "----------"; // Password for phpMyadmin.
-$dbname = "iot_home"; //Check this in the tutorial.
+$username = "----------"; // Username for phpMyAdmin. See "Database Access: New User" section in tutorial (Step 5).
+$password = "----------"; // Password for phpMyadmin. See "Database Access: New User" section in tutorial (Step 5).
+$dbname = "----------"; // This is likely iot_home. See "Database and Table Setup" section in tutorial (Step 5). 
 $conn = new mysqli($servername, $username, $password, $dbname); // MySQL database connection.
 if ($conn->connect_error) 
 	{
@@ -16,7 +16,7 @@ if ($conn->connect_error)
 
 date_default_timezone_set('America/New_York'); // Timezone can be changed, see http://php.net/manual/en/timezones.php.
 $dateNow = date("m/d/Y"); // Date format can be changed, see http://php.net/manual/en/function.date.php.
-$timeNow = date("H:i:s"); // Time format can be changed, see http://php.net/manual/en/function.date.php.
+$timeNow = date("g:i A"); // Time format can be changed, see http://php.net/manual/en/function.date.php.
 
 /*************
  * MYSQL: Check NodeMCU Readings
