@@ -19,9 +19,6 @@ Adafruit_BMP280 bme; // The I2C Address for the GY-BMP280 is 0x77. If not workin
 
 const char *ssid = "----------";  // Wifi network name.
 const char *password = "----------"; // Wifi network password.
- 
-// Webserver address for the Raspberry Pi.
-const char *host = "192.168.-.--"; // IP Address
 
 void setup() {
   
@@ -65,7 +62,7 @@ void loop() {
   //float hif = dht.computeHeatIndex(f, h); // DHT22 heat index calculation. Not very precise.
   float bmp280Fah = ((bme.readTemperature()*1.8)+32); // GY-BMP280 temperature calculation.
   float tempAvg = (f + bmp280Fah)/2; // Average of DHT and BMP Fahrenheit temperatures.
-  float relPressure = bme.readPressure(); / /GY-BMP280 relative pressure calculation.
+  float relPressure = bme.readPressure(); // GY-BMP280 relative pressure calculation.
   float seaLevelPressure = ((relPressure/pow((1-((float)(elevation))/44330), 5.255))/100.0); // Sea level pressure calculation.
   float dewPointCelcius = dewPointFast(tempCelcius, h); // Dew point in Celcius.
   float dewPointFah = ((dewPointCelcius*9)/5)+32; // Dew point conversion to Fahrenheit.
