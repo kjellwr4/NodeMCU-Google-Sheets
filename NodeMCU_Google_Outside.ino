@@ -11,7 +11,7 @@
 #define DHTPIN 2 // Connect the signal pin of the DHT22 to D4 on the NodeMCU. Keep this at pin 2- the NodeMCU pin mapping is incorrect.
 #define DHTTYPE DHT22
 DHT dht(DHTPIN, DHTTYPE);
-float elevation = ---.--;  // Elevation of NodeMCU location in meters. https://developers.google.com/maps/documentation/javascript/examples/elevation-simple
+float elevation = 159.66;  // Elevation of NodeMCU location in meters (Charlottesville, VA). https://developers.google.com/maps/documentation/javascript/examples/elevation-simple
 float dewPointFast(float celcius, float humidity); // Function call declaration for dew point claculation.
 float heatIndexPrecise(float fahrenheit, float humidity); // Function call declaration for heat index claculation.
 
@@ -62,7 +62,7 @@ void loop() {
   //float hif = dht.computeHeatIndex(f, h); // DHT22 heat index calculation. Not very precise.
   float bmp280Fah = ((bme.readTemperature()*1.8)+32); // GY-BMP280 temperature calculation.
   float tempAvg = (f + bmp280Fah)/2; // Average of DHT and BMP Fahrenheit temperatures.
-  float relPressure = bme.readPressure(); // GY-BMP280 relative pressure calculation.
+  float relPressure = bme.readPressure(); //GY-BMP280 relative pressure calculation.
   float seaLevelPressure = ((relPressure/pow((1-((float)(elevation))/44330), 5.255))/100.0); // Sea level pressure calculation.
   float dewPointCelcius = dewPointFast(tempCelcius, h); // Dew point in Celcius.
   float dewPointFah = ((dewPointCelcius*9)/5)+32; // Dew point conversion to Fahrenheit.
@@ -85,7 +85,7 @@ void loop() {
   
   // The following commands send the data from the NodeMCU to log.php.
   HTTPClient http; 
-  http.begin("http://192.168.-.--/log.php"); // Change to include IP Address.
+  http.begin("http://192.168.-.--/google_outside.php"); // Change to include IP Address.
   http.addHeader("Content-Type", "application/x-www-form-urlencoded"); 
   int httpCode = http.POST(postData);   // Send the request.
   String payload = http.getString();    // Get the response payload.
@@ -93,7 +93,7 @@ void loop() {
   Serial.println(payload);    // Print request response payload.
   http.end();
 
-  delay(300000); // Readings every 5 minutes.
+  delay(30000); // Readings every 5 minutes.
 }
 
 //Function for calculating dew point (C). From https://gist.github.com/Mausy5043/4179a715d616e6ad8a4eababee7e0281
