@@ -93,7 +93,7 @@ void loop() {
   Serial.println(payload);    // Print request response payload.
   http.end();
 
-  delay(30000); // Readings every 5 minutes.
+  delay(300000); // Readings every 5 minutes.
 }
 
 //Function for calculating dew point (C). From https://gist.github.com/Mausy5043/4179a715d616e6ad8a4eababee7e0281
