@@ -59,8 +59,7 @@ function getClient() {
  * appropriate credentials necessary for making the append request.
  * 
 *************/
-function expandHomeDirectory($path)
-{
+function expandHomeDirectory($path) {
     $homeDirectory = getenv('HOME');
     if (empty($homeDirectory)) {
         $homeDirectory = getenv('HOMEDRIVE') . getenv('HOMEPATH');
@@ -71,12 +70,13 @@ function expandHomeDirectory($path)
  * GOOGLE APPEND
  * 
  * The code below calls the functions to insert new data into the 
- * specified sheet. Change the $spreadsheetID by looking at the URL in a published sheet.
+ * specified sheet. Change the $spreadsheetID by looking at the URL
+ * in a published sheet.
  * 
  * Comments contain notes and changes.
  * 
 *************/
-if (isset($temp, $humidity, $heat_index, $dew_point, $pressure)) {
+if ($temp != 0 || $humidity != 0 || $heat_index != 0 || $dew_point != 0 || $pressure != 0) {
 	$client = getClient();
 	$service = new Google_Service_Sheets($client);
 	$requestBody = new Google_Service_Sheets_ValueRange();
