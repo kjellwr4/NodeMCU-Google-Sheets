@@ -76,7 +76,7 @@ function expandHomeDirectory($path)
  * Comments contain notes and changes.
  * 
 *************/
-if (isset($temp, $humidity, $heat_index, $dew_point, $pressure)) {
+if ($temp != 0 || $humidity != 0 || $heat_index != 0 || $dew_point != 0 || $pressure != 0) {
 	$client = getClient();
 	$service = new Google_Service_Sheets($client);
 	$requestBody = new Google_Service_Sheets_ValueRange();
