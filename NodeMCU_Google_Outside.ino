@@ -85,7 +85,7 @@ void loop() {
   
   // The following commands send the data from the NodeMCU to log.php.
   HTTPClient http; 
-  http.begin("http://192.168.-.--/google_outside.php"); // Change to include IP Address.
+  http.begin("http://192.168.--.--/google_outside.php"); // Change to include IP Address.
   http.addHeader("Content-Type", "application/x-www-form-urlencoded"); 
   int httpCode = http.POST(postData);   // Send the request.
   String payload = http.getString();    // Get the response payload.
