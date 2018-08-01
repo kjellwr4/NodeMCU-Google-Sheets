@@ -20,7 +20,6 @@ Adafruit_BMP280 bme; // The I2C Address for the GY-BMP280 is 0x77. If not workin
 const char *ssid = "----------";  // Wifi network name.
 const char *password = "----------"; // Wifi network password.
 
-
 void setup() {
   
   delay(1000);
