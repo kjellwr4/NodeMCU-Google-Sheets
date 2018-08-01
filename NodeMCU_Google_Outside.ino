@@ -20,6 +20,7 @@ Adafruit_BMP280 bme; // The I2C Address for the GY-BMP280 is 0x77. If not workin
 const char *ssid = "----------";  // Wifi network name.
 const char *password = "----------"; // Wifi network password.
 
+
 void setup() {
   
   delay(1000);
@@ -85,7 +86,7 @@ void loop() {
   
   // The following commands send the data from the NodeMCU to log.php.
   HTTPClient http; 
-  http.begin("http://192.168.-.--/google_outside.php"); // Change to include IP Address.
+  http.begin("http://192.168.--.--/google_outside.php"); // Change to include IP Address.
   http.addHeader("Content-Type", "application/x-www-form-urlencoded"); 
   int httpCode = http.POST(postData);   // Send the request.
   String payload = http.getString();    // Get the response payload.
