@@ -82,7 +82,7 @@ if ($temp != 0 || $humidity != 0 || $heat_index != 0 || $dew_point != 0 || $pres
 	$requestBody = new Google_Service_Sheets_ValueRange();
 	$spreadsheetId = '----------'; // Replace the characters between quotes with your spreadsheet ID. See URL.
 	$requestBody->setValues(["values" => [$dateNow, $timeNow, $temp, $humidity, $heat_index, $dew_point, $pressure]]); // Add the variables in list form. Order matters in terms of columns on the spreadsheet!
-	$range = 'A1'; // Do not change this value regardless of the number of values set in the $requestBody. It should always be A1.
+	$range = 'Sheet1!A1'; // Do not change this value regardless of the number of values set in the $requestBody. It should always be A1.
 	$conf = ["valueInputOption" => "USER_ENTERED"]; // Or "RAW." See https://developers.google.com/sheets/api/reference/rest/v4/ValueInputOption
 	$response = $service->spreadsheets_values->append($spreadsheetId, $range, $requestBody, $conf);
 }
