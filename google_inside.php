@@ -2,12 +2,9 @@
 require __DIR__ . '/vendor/autoload.php'; // Necessary for Google Sheets API.
 date_default_timezone_set('America/New_York'); // Timezone can be changed, see http://php.net/manual/en/timezones.php.
 $dateNow = date("m/d/Y"); // Date format can be changed, see http://php.net/manual/en/function.date.php.
-$timeNow = date("g:i A"); // Time format can be changed, see http://php.net/manual/en/function.date.php.
+$timeNow = date("g:i A"); // 12-hour with AM and PM. Time format can be changed, see http://php.net/manual/en/function.date.php.
 $temp = number_format($_POST['temp'], 2, '.', '');
 $humidity = number_format($_POST['humidity'], 2, '.', '');
-$heat_index = number_format($_POST['heat_index'], 2, '.', '');
-$dew_point = number_format($_POST['dew_point'], 2, '.', '');
-$pressure = number_format($_POST['pressure'], 2, '.', '');
 /**********
  * GOOGLE FUNCTION: getClient
  * 
@@ -59,7 +56,8 @@ function getClient() {
  * appropriate credentials necessary for making the append request.
  * 
 *************/
-function expandHomeDirectory($path) {
+function expandHomeDirectory($path)
+{
     $homeDirectory = getenv('HOME');
     if (empty($homeDirectory)) {
         $homeDirectory = getenv('HOMEDRIVE') . getenv('HOMEPATH');
@@ -70,8 +68,7 @@ function expandHomeDirectory($path) {
  * GOOGLE APPEND
  * 
  * The code below calls the functions to insert new data into the 
- * specified sheet. Change the $spreadsheetID by looking at the URL
- * in a published sheet.
+ * specified sheet. Change the $spreadsheetID by looking at the URL in a published sheet.
  * 
  * Comments contain notes and changes.
  * 
@@ -81,8 +78,8 @@ if ($temp != 0 || $humidity != 0 || $heat_index != 0 || $dew_point != 0 || $pres
 	$service = new Google_Service_Sheets($client);
 	$requestBody = new Google_Service_Sheets_ValueRange();
 	$spreadsheetId = '----------'; // Replace the characters between quotes with your spreadsheet ID. See URL.
-	$requestBody->setValues(["values" => [$dateNow, $timeNow, $temp, $humidity, $heat_index, $dew_point, $pressure]]); // Add the variables in list form. Order matters in terms of columns on the spreadsheet!
-	$range = 'google_outside!A1'; // Do not change this value regardless of the number of values set in the $requestBody. It should always be A1.
+	$requestBody->setValues(["values" => [$dateNow, $timeNow, $temp, $humidity]]); // Add the variables in list form. Order matters in terms of columns on the spreadsheet!
+	$range = 'google_inside!A1'; // Do not change this value regardless of the number of values set in the $requestBody. It should always be A1.
 	$conf = ["valueInputOption" => "USER_ENTERED"]; // Or "RAW." See https://developers.google.com/sheets/api/reference/rest/v4/ValueInputOption
 	$response = $service->spreadsheets_values->append($spreadsheetId, $range, $requestBody, $conf);
 }
